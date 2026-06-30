@@ -1,20 +1,33 @@
 package lucas.evento.infrastructure.presentation;
 
+import lucas.evento.core.entites.Evento;
+import lucas.evento.core.usecases.CriarEventoUseCase;
 import lucas.evento.infrastructure.dto.EventoDTO;
-import lucas.evento.infrastructure.persistence.EventoEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lucas.evento.infrastructure.mapper.EventoDtoMapper;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1")
+
 public class EventoController {
 
-    @PostMapping("criarevento")
-    public String criarEvento(@RequestBody EventoDTO evento){
-        return "Evento criado";
+    private final CriarEventoUseCase criarEventoUseCase;
+    private final EventoDtoMapper eventoDtoMapper;
+
+    public EventoController(CriarEventoUseCase criarEventoUseCase, EventoDtoMapper eventoDtoMapper) {
+        this.criarEventoUseCase = criarEventoUseCase;
+        this.eventoDtoMapper = eventoDtoMapper;
+    }
+
+    @PostMapping("/criarevento")
+    public EventoDTO criarEvento(@RequestBody EventoDTO eventoDTO){
+        Evento nvoEvento = criarEventoUseCase.execute(eventoDtoMapper.toDomain(eventoDTO));
+        return eventoDtoMapper.toDto(nvoEvento);
+    }
+
+    @GetMapping("/listareventos")
+    public String listarEvento(){
+        return "lista";
     }
 
 }
